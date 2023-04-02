@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import styles from "./Header.module.scss";
 import { FaShoppingCart, FaTimes } from "react-icons/fa";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
@@ -14,13 +14,15 @@ const logo = (
   </div>
 );
 
+const handleActiveLink = ({ isActive }) => (isActive ? `${styles.active}` : "");
+
 const cartIcon = (
   <span className={styles.cart}>
-    <Link to="/cart">
+    <NavLink to="/cart" className={handleActiveLink}>
       Cart
       <FaShoppingCart size={20} />
       <p>0</p>
-    </Link>
+    </NavLink>
   </span>
 );
 
@@ -58,17 +60,27 @@ export default function Header() {
               <FaTimes size={22} color="#fff" onClick={hideMenu} />
             </li>
             <li>
-              <Link to="/">Home</Link>
+              <NavLink to="/" className={handleActiveLink}>
+                Home
+              </NavLink>
             </li>
             <li>
-              <Link to="/contact-us">Contact Us</Link>
+              <NavLink to="/contact-us" className={handleActiveLink}>
+                Contact Us
+              </NavLink>
             </li>
           </ul>
           <div className={styles["header-right"]} onClick={hideMenu}>
             <span className={styles.links}>
-              <Link to="/login">Login</Link>
-              <Link to="/register">Register</Link>
-              <Link to="/order-history">My Orders</Link>
+              <NavLink to="/login" className={handleActiveLink}>
+                Login
+              </NavLink>
+              <NavLink to="/register" className={handleActiveLink}>
+                Register
+              </NavLink>
+              <NavLink to="/order-history" className={handleActiveLink}>
+                My Orders
+              </NavLink>
             </span>
             {cartIcon}
           </div>
