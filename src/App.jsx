@@ -1,10 +1,19 @@
-import "./App.scss";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from "./components/header/Header";
+import Footer from "./components/footer/Footer";
+import Home from "./pages/home/Home";
+import Contact from "./pages/contact/Contact";
 
 function App() {
   return (
-    <div>
-      <h1>Hello World!!!</h1>
-    </div>
+    <Router>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/contact-us" element={<Contact />} />
+      </Routes>
+      <Footer />
+    </Router>
   );
 }
 
