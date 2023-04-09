@@ -9,7 +9,7 @@ import Loader from "../../components/loader/Loader";
 import "react-toastify/dist/ReactToastify.css";
 import { auth } from "../../firebase/config.js";
 
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 export default function Register() {
   const [formData, setFormData] = useState({
