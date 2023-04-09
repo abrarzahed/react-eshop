@@ -7,7 +7,11 @@ import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { auth } from "../../firebase/config.js";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
 
 import Loader from "../../components/loader/Loader";
 
@@ -53,6 +57,21 @@ export default function Login() {
       });
   };
 
+  // login with google
+  const provider = new GoogleAuthProvider();
+  const loginWithGoogle = () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const user = result.user;
+        console.log("logged in with google", user);
+        toast.success("Logged in Successfully");
+        navigate("/");
+      })
+      .catch((error) => {
+        toast.error(error.message);
+      });
+  };
+
   return (
     <>
       {isLoading && <Loader />}
@@ -87,7 +106,10 @@ export default function Login() {
               </div>
               <p>-- or --</p>
             </form>
-            <button className="--btn --btn-danger --btn-block">
+            <button
+              className="--btn --btn-danger --btn-block"
+              onClick={loginWithGoogle}
+            >
               <FaGoogle color="#fff" /> Login with Google
             </button>
             <span className={styles.register}>
