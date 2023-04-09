@@ -3,6 +3,11 @@ import styles from "./Header.module.scss";
 import { FaShoppingCart, FaTimes } from "react-icons/fa";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import { useState } from "react";
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebase/config";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const logo = (
   <div className={styles.logo}>
@@ -28,6 +33,7 @@ const cartIcon = (
 
 export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const toggleMenu = () => {
     setShowMenu((prev) => !prev);
@@ -37,60 +43,81 @@ export default function Header() {
     setShowMenu(false);
   };
 
-  return (
-    <header>
-      <div className={styles.header}>
-        {logo}
-        <nav
-          className={
-            showMenu ? `${styles["show-nav"]}` : `${styles["hide-nav"]}`
-          }
-        >
-          <div
-            className={
-              showMenu
-                ? `${styles["nav-wrapper"]} ${styles["show-nav-wrapper"]}`
-                : `${styles["nav-wrapper"]}`
-            }
-            onClick={hideMenu}
-          ></div>
-          <ul onClick={hideMenu}>
-            <li className={styles["logo-mobile"]}>
-              {logo}
-              <FaTimes size={22} color="#fff" onClick={hideMenu} />
-            </li>
-            <li>
-              <NavLink to="/" className={handleActiveLink}>
-                Home
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/contact-us" className={handleActiveLink}>
-                Contact Us
-              </NavLink>
-            </li>
-          </ul>
-          <div className={styles["header-right"]} onClick={hideMenu}>
-            <span className={styles.links}>
-              <NavLink to="/login" className={handleActiveLink}>
-                Login
-              </NavLink>
-              <NavLink to="/register" className={handleActiveLink}>
-                Register
-              </NavLink>
-              <NavLink to="/order-history" className={handleActiveLink}>
-                My Orders
-              </NavLink>
-            </span>
-            {cartIcon}
-          </div>
-        </nav>
+  const logoutUser = () => {
+    setIsLoading(true);
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+        toast.success("Logged out");
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        // An error happened.
+        toast.error("Something went wrong");
+        setIsLoading(false);
+      });
+  };
 
-        <div className={styles["menu-icon"]}>
-          {cartIcon}
-          <HiOutlineMenuAlt3 size={28} onClick={toggleMenu} />
+  return (
+    <>
+      <ToastContainer />
+      <header>
+        <div className={styles.header}>
+          {logo}
+          <nav
+            className={
+              showMenu ? `${styles["show-nav"]}` : `${styles["hide-nav"]}`
+            }
+          >
+            <div
+              className={
+                showMenu
+                  ? `${styles["nav-wrapper"]} ${styles["show-nav-wrapper"]}`
+                  : `${styles["nav-wrapper"]}`
+              }
+              onClick={hideMenu}
+            ></div>
+            <ul onClick={hideMenu}>
+              <li className={styles["logo-mobile"]}>
+                {logo}
+                <FaTimes size={22} color="#fff" onClick={hideMenu} />
+              </li>
+              <li>
+                <NavLink to="/" className={handleActiveLink}>
+                  Home
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/contact-us" className={handleActiveLink}>
+                  Contact Us
+                </NavLink>
+              </li>
+            </ul>
+            <div className={styles["header-right"]} onClick={hideMenu}>
+              <span className={styles.links}>
+                <NavLink to="/login" className={handleActiveLink}>
+                  Login
+                </NavLink>
+                <NavLink to="/register" className={handleActiveLink}>
+                  Register
+                </NavLink>
+                <NavLink to="/order-history" className={handleActiveLink}>
+                  My Orders
+                </NavLink>
+                <NavLink to="/" onClick={logoutUser}>
+                  Logout
+                </NavLink>
+              </span>
+              {cartIcon}
+            </div>
+          </nav>
+
+          <div className={styles["menu-icon"]}>
+            {cartIcon}
+            <HiOutlineMenuAlt3 size={28} onClick={toggleMenu} />
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 }
