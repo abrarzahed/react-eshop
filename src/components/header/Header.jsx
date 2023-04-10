@@ -1,9 +1,9 @@
 import { Link, NavLink } from "react-router-dom";
 import styles from "./Header.module.scss";
-import { FaShoppingCart, FaTimes } from "react-icons/fa";
+import { FaShoppingCart, FaTimes, FaUserCircle } from "react-icons/fa";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
-import { useState } from "react";
-import { signOut } from "firebase/auth";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../firebase/config";
 
 import { ToastContainer, toast } from "react-toastify";
@@ -33,7 +33,21 @@ const cartIcon = (
 
 export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
+  const [userName, setUserName] = useState("");
+
+  // on auth changed
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // const uid = user.uid;
+        setUserName(user.displayName);
+        // console.log(user);
+      } else {
+        setUserName("");
+      }
+    });
+  }, []);
 
   const toggleMenu = () => {
     setShowMenu((prev) => !prev);
@@ -44,17 +58,17 @@ export default function Header() {
   };
 
   const logoutUser = () => {
-    setIsLoading(true);
+    // setIsLoading(true);
     signOut(auth)
       .then(() => {
         // Sign-out successful.
         toast.success("Logged out");
-        setIsLoading(false);
+        // setIsLoading(false);
       })
       .catch((error) => {
         // An error happened.
         toast.error("Something went wrong");
-        setIsLoading(false);
+        // setIsLoading(false);
       });
   };
 
@@ -82,6 +96,7 @@ export default function Header() {
                 {logo}
                 <FaTimes size={22} color="#fff" onClick={hideMenu} />
               </li>
+
               <li>
                 <NavLink to="/" className={handleActiveLink}>
                   Home
@@ -95,18 +110,32 @@ export default function Header() {
             </ul>
             <div className={styles["header-right"]} onClick={hideMenu}>
               <span className={styles.links}>
-                <NavLink to="/login" className={handleActiveLink}>
-                  Login
-                </NavLink>
-                <NavLink to="/register" className={handleActiveLink}>
-                  Register
-                </NavLink>
-                <NavLink to="/order-history" className={handleActiveLink}>
-                  My Orders
-                </NavLink>
-                <NavLink to="/" onClick={logoutUser}>
-                  Logout
-                </NavLink>
+                {userName !== "" && (
+                  <NavLink to="/">
+                    {" "}
+                    <FaUserCircle size={16} /> Hi, {userName}
+                  </NavLink>
+                )}
+                {userName === "" && (
+                  <NavLink to="/login" className={handleActiveLink}>
+                    Login
+                  </NavLink>
+                )}
+                {userName === "" && (
+                  <NavLink to="/register" className={handleActiveLink}>
+                    Register
+                  </NavLink>
+                )}
+                {userName !== "" && (
+                  <NavLink to="/order-history" className={handleActiveLink}>
+                    My Orders
+                  </NavLink>
+                )}
+                {userName !== "" && (
+                  <NavLink to="/" onClick={logoutUser}>
+                    Logout
+                  </NavLink>
+                )}
               </span>
               {cartIcon}
             </div>
