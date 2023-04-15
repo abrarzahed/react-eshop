@@ -8,6 +8,11 @@ import { auth } from "../../firebase/config";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useDispatch } from "react-redux";
+import {
+  removeActiveUser,
+  setActiveUser,
+} from "../../redux/features/authSlice";
 
 const logo = (
   <div className={styles.logo}>
@@ -36,12 +41,30 @@ export default function Header() {
   // const [isLoading, setIsLoading] = useState(false);
   const [userName, setUserName] = useState("");
 
+  const dispatch = useDispatch();
+
   // on auth changed
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        // console.log(user);
         // const uid = user.uid;
-        setUserName(user.displayName);
+        if (user.displayName == null) {
+          const nameString = user.email.slice(0, -10);
+          const uname =
+            nameString.charAt(0).toUpperCase() + nameString.slice(1);
+          setUserName(uname);
+          // console.log("null", userName, uname);
+        } else {
+          setUserName(user.displayName);
+        }
+        dispatch(
+          setActiveUser({
+            displayName: user.displayName ? user.displayName : userName,
+            email: user.email,
+            userID: user.uid,
+          })
+        );
         // console.log(user);
       } else {
         setUserName("");
@@ -64,6 +87,8 @@ export default function Header() {
         // Sign-out successful.
         toast.success("Logged out");
         // setIsLoading(false);
+        dispatch(removeActiveUser());
+        // setUserName("");
       })
       .catch((error) => {
         // An error happened.
